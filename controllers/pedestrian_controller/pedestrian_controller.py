@@ -4,14 +4,8 @@ import math
 robot = Supervisor()
 time_step = int(robot.getBasicTimeStep())
 
-pedestrian_node = robot.getFromDef("PEDESTRIAN_1")
-
-if pedestrian_node is None:
-    print("Erro: não encontrei o nó PEDESTRIAN_1")
-    exit()
-
-translation_field = pedestrian_node.getField("translation")
-rotation_field = pedestrian_node.getField("rotation")
+translation_field = robot.getSelf().getField("translation")
+rotation_field = robot.getSelf().getField("rotation")
 
 while robot.step(time_step) != -1:
     pos = translation_field.getSFVec3f()

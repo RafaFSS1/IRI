@@ -83,8 +83,8 @@ WorldInfo {
   ]
 }
 Viewpoint {
-  orientation 0.15719804461438425 -0.12681164379117976 -0.9793914343960707 4.47889409943094
-  position 11.392454148386003 -556.4621295534046 32.44989430201935
+  orientation 0.11868758894560585 -0.1532891236566146 -0.9810278797255794 4.946862694126485
+  position -17.50656768810357 -476.27984868876143 3.452689200724811
   near 1
   lensFlare LensFlare {
   }
@@ -117,6 +117,16 @@ DEF PEDESTRIAN_1 Pedestrian {
   controllerArgs [
     ""
   ]
+  enableBoundingObject TRUE
+}
+Pedestrian {
+  translation -6 -200 1.27
+  name "pedestrian(1)"
+  controller "pedestrian_controller"
+  controllerArgs [
+    ""
+  ]
+  enableBoundingObject TRUE
 }
 StraightRoadSegment {
   translation 0 -500 0
@@ -127,41 +137,28 @@ StraightRoadSegment {
 PedestrianCrossing {
   translation 0 -400 0
   size 12 8
+  enableBoundingObject FALSE
 }
 PedestrianCrossing {
   translation 0 -300 0
   name "pedestrian crossing(1)"
   size 12 8
+  enableBoundingObject FALSE
 }
 BmwX5 {
-  hidden position_0_0 -9.089774241703513e-11
-  hidden position2_0_0 -5.870824049038911e-08
-  hidden position_0_1 8.922692621033418e-11
-  hidden position2_0_1 -5.870833795756233e-08
-  hidden position_0_2 -7.837735749127717e-05
-  hidden position_0_3 -7.837736324992193e-05
-  hidden rotation_1 -4.544881673312236e-11 0.9999988013916791 0.0015482942889614478 5.960464477539063e-08
-  hidden rotation_2 -4.461341157904222e-11 -0.9999988450543562 -0.0015198322122929547 5.960464477539063e-08
-  hidden rotation_3 0 0.9999999999999999 0 7.837735990371467e-05
-  hidden rotation_4 0 -1 0 7.837736556975387e-05
   translation 2.4114700037869783 -480.00127648475876 0.2969206842270787
   rotation 0.002247101248729468 -0.0022470958753121276 0.999994950535304 1.5708050494569654
+  controller "car1"
+  sensorsSlotCenter [
+    GPS {
+    }
+  ]
 }
 DEF Veiculo_ultrupassar BmwX5 {
-  hidden position_0_0 -8.552876539615001e-11
-  hidden position2_0_0 -2.12481633373426e-06
-  hidden position_0_1 8.358539841655334e-11
-  hidden position2_0_1 -2.124817110292068e-06
-  hidden position_0_2 -0.034068657292697146
-  hidden position_0_3 -0.03406867883956455
-  hidden rotation_1 -4.276438266343055e-11 0.9999999991898759 4.025230979682669e-05 2.124761376563533e-06
-  hidden rotation_2 -4.1792699175940534e-11 -0.999999999226273 -3.9337690734408825e-05 2.124761376563533e-06
-  hidden rotation_3 0 0.9999999999999999 0 0.03406865729269344
-  hidden rotation_4 0 -1 0 0.03406867883956514
   translation -2.8585299242731423 -480.0267135416074 0.2969151275719118
   rotation 0.002248093119484365 -0.002248087759020755 0.9999949460766059 1.5708050475810313
   name "vehicle(1)"
-  controller "car_controller"
+  controller "car2"
   controllerArgs [
     ""
   ]
