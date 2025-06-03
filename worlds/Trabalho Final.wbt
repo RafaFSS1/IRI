@@ -178,10 +178,10 @@ DEF ZONE_MARKER_1 Pose {
   children [
     DEF ZONE_BOX_1 Shape {
       appearance PBRAppearance {
-        baseColor 1 0 0
+        baseColor 0 0 1
       }
       geometry Box {
-        size 0.5 200 2
+        size 0.5 240 2
       }
     }
   ]
@@ -194,7 +194,7 @@ DEF ZONE_MARKER_2 Pose {
         baseColor 1 1 0
       }
       geometry Box {
-        size 0.5 200 2
+        size 0.5 240 2
       }
     }
   ]
@@ -204,10 +204,10 @@ DEF ZONE_MARKER_3 Pose {
   children [
     DEF ZONE_BOX_3 Shape {
       appearance PBRAppearance {
-        baseColor 0 0 1
+        baseColor 1 0 0
       }
       geometry Box {
-        size 0.5 200 2
+        size 0.5 240 2
       }
     }
   ]
@@ -220,7 +220,7 @@ DEF ZONE_MARKER_4 Pose {
         baseColor 0 1 0
       }
       geometry Box {
-        size 0.5 200 2
+        size 0.5 240 2
       }
     }
   ]
