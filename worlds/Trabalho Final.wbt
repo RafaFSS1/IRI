@@ -147,7 +147,7 @@ DEF PASSADEIRA_2 PedestrianCrossing {
   size 12 8
   enableBoundingObject FALSE
 }
-BmwX5 {
+DEF VEICULO_TREINO BmwX5 {
   translation 3 -499 0.296921
   rotation 0.002247101248729468 -0.0022470958753121276 0.999994950535304 1.5708050494569654
   controller "car1"
@@ -179,7 +179,6 @@ DEF ZONE_MARKER_1 Pose {
     DEF ZONE_BOX_1 Shape {
       appearance PBRAppearance {
         baseColor 1 0 0
-        transparency 0.7
       }
       geometry Box {
         size 0.5 200 2
@@ -192,8 +191,7 @@ DEF ZONE_MARKER_2 Pose {
   children [
     DEF ZONE_BOX_2 Shape {
       appearance PBRAppearance {
-        baseColor 1 0 0
-        transparency 0.7
+        baseColor 1 1 0
       }
       geometry Box {
         size 0.5 200 2
@@ -206,8 +204,7 @@ DEF ZONE_MARKER_3 Pose {
   children [
     DEF ZONE_BOX_3 Shape {
       appearance PBRAppearance {
-        baseColor 1 0 0
-        transparency 0.7
+        baseColor 0 0 1
       }
       geometry Box {
         size 0.5 200 2
@@ -220,8 +217,7 @@ DEF ZONE_MARKER_4 Pose {
   children [
     DEF ZONE_BOX_4 Shape {
       appearance PBRAppearance {
-        baseColor 1 0 0
-        transparency 0.7
+        baseColor 0 1 0
       }
       geometry Box {
         size 0.5 200 2
