@@ -40,10 +40,10 @@ if not all([pedestrian1_node, overtaking_car_node, crosswalk1_node, pedestrian2_
 # O valor Z deve ser o nível do solo. O Y pode ser 0 se a estrada for ao longo do eixo X.
 ZONE_Z_LEVEL = 1
 ZONE_POSITIONS = [
-    [0.0,-400.0,ZONE_Z_LEVEL],  # Zona 1 -400 até -200
-    [0.0,-200.0,ZONE_Z_LEVEL],  # Zona 2 -200 até 0
-    [0.0,0.0,ZONE_Z_LEVEL],  # Zona 3 0 até 200
-    [0.0,200.0,ZONE_Z_LEVEL]  # Zona 4 200 até 400
+    [0.0,-460.0,ZONE_Z_LEVEL],  # Zona 1 -460 até -220
+    [0.0,-220.0,ZONE_Z_LEVEL],  # Zona 2 -220 até 20
+    [0.0,20.0,ZONE_Z_LEVEL],  # Zona 3 20 até 260
+    [0.0,260.0,ZONE_Z_LEVEL]  # Zona 4 260 até 500
 ]
 NUMBER_OF_ZONES = len(ZONE_POSITIONS)
 
@@ -181,7 +181,7 @@ def setup_world_scenarios():
             # Define a posição do marcador (ex: ao lado da estrada, cobrindo a zona)
             # Isto assume que o 'size' do marcador no Webots já está definido para o comprimento da zona
             zone_def = ZONE_POSITIONS[idx]
-            marker_y_center = zone_def[1] + 100.0
+            marker_y_center = zone_def[1] + 120.0
             # Coloca o marcador um pouco ao lado da estrada (ex: X = 10), ajusta Z para visualização
             marker_pos = [10.0, marker_y_center,
                           ZONE_Z_LEVEL - 0.5]  # Ajusta X e Z da posição do marcador
@@ -234,7 +234,7 @@ def setup_world_scenarios():
 
         elif scenario_type == SCENARIO_PED_AT_CROSSING:
             if crosswalk1_node and pedestrian1_node:
-                random_pos=random.uniform(10.0, 190.0)
+                random_pos=random.uniform(0.0, 205.0) #Dar 35.0 de espaço para o caso de ser a ultrupassagem a seguir e impedir que o carro comece a ultrupassra quando o outro está parado
                 crosswalk_pos=[zone_center_pos[0],zone_center_pos[1] + random_pos,zone_center_pos[2]-1]
                 move_node_to_position(crosswalk1_node, crosswalk_pos)
                 # Posiciona o peão perto da passadeira (ex: na berma)
@@ -257,7 +257,7 @@ def setup_world_scenarios():
 
         elif scenario_type == SCENARIO_EMPTY_CROSSING:
             if crosswalk2_node:
-                random_pos = random.uniform(10.0, 190.0)
+                random_pos = random.uniform(0.0, 205.0)
                 crosswalk_pos = [zone_center_pos[0], zone_center_pos[1]+ random_pos, zone_center_pos[2] - 1]
                 move_node_to_position(crosswalk2_node, crosswalk_pos)
                 print(f"    Passadeira vazia em {crosswalk_pos}")
@@ -266,7 +266,7 @@ def setup_world_scenarios():
 
         elif scenario_type == SCENARIO_PED_JAYWALKING:
             if pedestrian2_node:
-                random_pos = random.uniform(10.0, 190.0)
+                random_pos = random.uniform(0.0, 205.0)
                 # Posiciona o peão para atravessar fora da passadeira
 
                 side_choice = random.choice([-1, 1])  # -1 esquerda 1 direita randomizar a posicao

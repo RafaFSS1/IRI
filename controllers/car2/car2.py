@@ -27,11 +27,13 @@ alignment_complete = False
 low_speed_step_start = None
 resumed_speed = False
 start= False
+event_over= False
 
 
 CAR_NAME="VEICULO_TREINO"
 MIN_PASS_DISTANCE_TO_TRIGGER = 30.0
 car=driver.getFromDef(CAR_NAME)
+overtake_pos=[1000.0,1000.0,1000.0]
 
 while driver.step() != -1:
     if start:
@@ -71,11 +73,20 @@ while driver.step() != -1:
             low_speed_step_start = step_counter
             print(f"Finished alignment. Cruising at {LOW_SPEED} m/s.")
 
-    elif alignment_complete and not resumed_speed:
+    elif alignment_complete and not resumed_speed and not event_over:
         if step_counter - low_speed_step_start >= (LOW_SPEED_DURATION_SECONDS * 1000 / time_step):
             driver.setCruisingSpeed(INITIAL_SPEED)
             resumed_speed = True
             print(f"Resuming speed to {INITIAL_SPEED} m/s after {LOW_SPEED_DURATION_SECONDS} seconds.")
+
+    if not event_over and driver.getSelf().getField("translation").getSFVec3f()[1] >= overtake_pos[1]+240.0:
+        event_over = True
+        print(f"VEICULO_ULTRAPASSAR: Ultrapassagem concluída. A desaparecer.")
+
+    if event_over:
+        driver.getSelf().getField("translation").setSFVec3f([100.0,0.0,1.0])
+        driver.setCruisingSpeed(0)  # Comanda para parar (velocidade alvo 0)
+        driver.setBrakeIntensity(1.0)  # Aplica os travões com força máxima
 
     # Ensure straight driving before overtake
     if not overtake_started:
