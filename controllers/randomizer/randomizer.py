@@ -70,6 +70,31 @@ unique_scenarios_from_pdf = [
     SCENARIO_PED_JAYWALKING
 ]
 
+# Nomes DEF para os marcadores de zona
+ZONE_MARKER_DEF_NAMES = [
+    "ZONE_MARKER_1",
+    "ZONE_MARKER_2",
+    "ZONE_MARKER_3",
+    "ZONE_MARKER_4"
+]
+
+scenario_colors = { # Cores RGB para os marcadores
+    SCENARIO_OVERTAKING: [1, 0, 0],       # Vermelho
+    SCENARIO_PED_AT_CROSSING: [0, 1, 0],  # Verde
+    SCENARIO_EMPTY_CROSSING: [0, 0, 1],   # Azul
+    SCENARIO_PED_JAYWALKING: [1, 1, 0],   # Amarelo
+    SCENARIO_NO_EVENT: [0.5, 0.5, 0.5]    # Cinza
+}
+DEFAULT_MARKER_COLOR = [0.2, 0.2, 0.2] # Cor para marcador não encontrado
+# (Dentro do teu bloco try-except para obter nós)
+# ... (obtenção dos teus nós de peões, carros, passadeiras) ...
+
+marker_nodes = []
+for name in ZONE_MARKER_DEF_NAMES:
+    node = supervisor.getFromDef(name)
+    if node is None:
+        print(f"AVISO: Nó marcador de zona '{name}' não encontrado.")
+    marker_nodes.append(node) # Adiciona mesmo que seja None para manter o índice
 
 # --- Função Auxiliar para Mover um Nó ---
 def move_node_to_position(node, position_xyz, rotation_xyzw=None):
@@ -95,6 +120,48 @@ def move_node_to_position(node, position_xyz, rotation_xyzw=None):
     # node.resetPhysics() # Usa com cuidado, pois afeta o objeto individualmente.
 
 
+def set_marker_appearance(marker_pose_node, color_rgb, transparency=0.0):
+    if marker_pose_node is None:
+        #print("DEBUG: set_marker_appearance: Nó marcador (Pose) é None. Não se pode mudar a cor.")
+        return
+
+    node_def_name = marker_pose_node.getDef()
+    if not node_def_name:  # Se o DEF name não estiver definido, usa o tipo de nó para identificar
+        node_def_name = f"Nó do tipo '{marker_pose_node.getTypeName()}' sem DEF"
+
+    #print(f"DEBUG: set_marker_appearance: A tentar mudar cor para '{node_def_name}' para {color_rgb}")
+
+    children_field = marker_pose_node.getField("children")
+    if children_field and children_field.getCount() > 0:
+        # print(f"DEBUG: Nó '{node_def_name}' tem {children_field.getCount()} filho(s). A aceder ao primeiro.")
+        shape_node = children_field.getMFNode(0)  # Obtém o primeiro nó filho
+
+        if shape_node is not None:
+            shape_def_name = shape_node.getDef() or "Shape anónimo"
+            #print(f"DEBUG: Primeiro filho de '{node_def_name}' é do tipo '{shape_node.getTypeName()}' (DEF: '{shape_def_name}')")
+
+            if shape_node.getTypeName() == 'Shape':
+                appearance_field = shape_node.getField("appearance")  # Isto é um SFNode field
+                if appearance_field:
+                    appearance_node = appearance_field.getSFNode()  # Isto obtém o nó real Appearance/PBRAppearance
+
+                    if appearance_node:
+                        appearance_type_name = appearance_node.getTypeName()
+                        #print(f"DEBUG: Encontrado nó de aparência '{appearance_type_name}' para o Shape em '{node_def_name}'.")
+
+                        base_color_field = appearance_node.getField("baseColor")
+                        if base_color_field:
+                            #print(f"DEBUG: A definir baseColor de '{appearance_type_name}' em '{node_def_name}' para {color_rgb}.")
+                            base_color_field.setSFColor(color_rgb)
+                        #else:
+                            #print(f"DEBUG: ERRO - Nó de aparência '{appearance_type_name}' em '{node_def_name}' NÃO TEM campo 'baseColor'.")
+
+                        transparency_field = appearance_node.getField("transparency")
+                        if transparency_field:
+                            #print(f"DEBUG: A definir transparência de '{appearance_type_name}' em '{node_def_name}' para {transparency}.")
+                            transparency_field.setSFFloat(transparency)
+
+
 # --- Função Principal para Configurar os Cenários ---
 def setup_world_scenarios():
     print("Configurando cenários para esta simulação...")
@@ -106,6 +173,22 @@ def setup_world_scenarios():
     if crosswalk1_node: move_node_to_position(crosswalk1_node, STORAGE_POSITION)
     if pedestrian2_node: move_node_to_position(pedestrian2_node, STORAGE_POSITION)
     if crosswalk2_node: move_node_to_position(crosswalk2_node, STORAGE_POSITION)
+
+    # (Após mover os teus peões, carros, passadeiras para STORAGE_POSITION)
+    # Mover/resetar marcadores de zona
+    for idx, marker in enumerate(marker_nodes):
+        if marker:
+            # Define a posição do marcador (ex: ao lado da estrada, cobrindo a zona)
+            # Isto assume que o 'size' do marcador no Webots já está definido para o comprimento da zona
+            zone_def = ZONE_POSITIONS[idx]
+            marker_y_center = zone_def[1] + 100.0
+            # Coloca o marcador um pouco ao lado da estrada (ex: X = 10), ajusta Z para visualização
+            marker_pos = [10.0, marker_y_center,
+                          ZONE_Z_LEVEL - 0.5]  # Ajusta X e Z da posição do marcador
+            move_node_to_position(marker, marker_pos)
+            # Reseta a cor para o caso de não haver evento ou para cor base
+            set_marker_appearance(marker, scenario_colors.get(SCENARIO_NO_EVENT, DEFAULT_MARKER_COLOR),
+                                  0.0)  # Mais transparente se vazio
 
     # 2. Gerar a lista de cenários para as zonas
     # Vamos garantir que cada um dos 4 cenários principais aparece uma vez, se houver zonas suficientes.
@@ -142,20 +225,31 @@ def setup_world_scenarios():
                 # Pode precisar de ajustar a posição exata
                 # e a rotação para que o carro esteja orientado corretamente.
                 # Esta é uma rotação padrão (sem rotação extra se o modelo já estiver orientado)
+                car_pos= [zone_center_pos[0] - 3, zone_center_pos[1], zone_center_pos[2]]
                 car_rotation = [0, 0, 1, 1.57]
-                move_node_to_position(overtaking_car_node, zone_center_pos, car_rotation)
+                move_node_to_position(overtaking_car_node, car_pos, car_rotation)
                 print(f"    Carro de ultrapassagem posicionado em {zone_center_pos}")
             else:
                 print(f"    AVISO: Nó do carro de ultrapassagem não encontrado para {scenario_type}.")
 
         elif scenario_type == SCENARIO_PED_AT_CROSSING:
             if crosswalk1_node and pedestrian1_node:
-                crosswalk_pos=[zone_center_pos[0],zone_center_pos[1],zone_center_pos[2]-1]
+                random_pos=random.uniform(10.0, 190.0)
+                crosswalk_pos=[zone_center_pos[0],zone_center_pos[1] + random_pos,zone_center_pos[2]-1]
                 move_node_to_position(crosswalk1_node, crosswalk_pos)
                 # Posiciona o peão perto da passadeira (ex: na berma)
                 # Ajusta estas coordenadas relativas conforme necessário
-                ped_pos_relative_to_crosswalk = [zone_center_pos[0] + 7, zone_center_pos[1], zone_center_pos[2]]
-                ped_rotation = [0, 0, 1, 3.1416]
+
+                side_choice = random.choice([-1, 1]) #-1 esquerda 1 direita randomizar a posicao
+                if side_choice == -1:
+                    ped_angle=0.0 #virado para a direita
+                    ped_x=-7 #esquerda
+                else:
+                    ped_angle=3.1416 #virado para a esquerda
+                    ped_x=7 #direita
+
+                ped_pos_relative_to_crosswalk = [zone_center_pos[0] + ped_x, zone_center_pos[1]+ random_pos, zone_center_pos[2]]
+                ped_rotation = [0, 0, 1, ped_angle]
                 move_node_to_position(pedestrian1_node, ped_pos_relative_to_crosswalk, ped_rotation)
                 print(f"    Passadeira em {crosswalk_pos}, Peão em {ped_pos_relative_to_crosswalk}")
             else:
@@ -163,7 +257,8 @@ def setup_world_scenarios():
 
         elif scenario_type == SCENARIO_EMPTY_CROSSING:
             if crosswalk2_node:
-                crosswalk_pos = [zone_center_pos[0], zone_center_pos[1], zone_center_pos[2] - 1]
+                random_pos = random.uniform(10.0, 190.0)
+                crosswalk_pos = [zone_center_pos[0], zone_center_pos[1]+ random_pos, zone_center_pos[2] - 1]
                 move_node_to_position(crosswalk2_node, crosswalk_pos)
                 print(f"    Passadeira vazia em {crosswalk_pos}")
             else:
@@ -171,11 +266,20 @@ def setup_world_scenarios():
 
         elif scenario_type == SCENARIO_PED_JAYWALKING:
             if pedestrian2_node:
+                random_pos = random.uniform(10.0, 190.0)
                 # Posiciona o peão para atravessar fora da passadeira
-                # Certifica-te que a passadeira (crosswalk_node) não está nesta zona se for o mesmo objeto.
-                jaywalk_pos = [zone_center_pos[0] + 7, zone_center_pos[1],
+
+                side_choice = random.choice([-1, 1])  # -1 esquerda 1 direita randomizar a posicao
+                if side_choice == -1:
+                    ped_angle = 0.0  # virado para a direita
+                    ped_x = -7  # esquerda
+                else:
+                    ped_angle = 3.1416  # virado para a esquerda
+                    ped_x = 7  # direita
+
+                jaywalk_pos = [zone_center_pos[0] + ped_x, zone_center_pos[1] + random_pos,
                                zone_center_pos[2]]  # Ex: Na berma, pronto para atravessar
-                jaywalk_rotation = [0, 0, 1, 3.1416]  # Ex: Virado para a estrada
+                jaywalk_rotation = [0, 0, 1, ped_angle]  # Ex: Virado para a estrada
                 move_node_to_position(pedestrian2_node, jaywalk_pos, jaywalk_rotation)
                 print(f"    Peão para 'jaywalking' em {jaywalk_pos}")
             else:
@@ -184,6 +288,11 @@ def setup_world_scenarios():
         elif scenario_type == SCENARIO_NO_EVENT:
             print(f"    Zona {zone_idx + 1} sem evento.")
             # Os objetos já foram movidos para a arrumação se não foram usados.
+
+        # Atualizar aparência do marcador para esta zona
+        if zone_idx < len(marker_nodes) and marker_nodes[zone_idx] is not None:
+            color = scenario_colors.get(scenario_type, DEFAULT_MARKER_COLOR)
+            set_marker_appearance(marker_nodes[zone_idx], color)  # Usa a transparência padrão definida na função
 
     # supervisor.simulationSetMode(supervisor.SIMULATION_MODE_PAUSE) # Pausa para verificação
     # supervisor.simulationResetPhysics() # CUIDADO: Isto reinicia TODA a física, incluindo o teu carro RL.
