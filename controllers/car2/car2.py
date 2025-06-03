@@ -1,21 +1,18 @@
 from vehicle import Driver
 import random
+import math
 
 driver = Driver()
 time_step = int(driver.getBasicTimeStep())
 
 # Constants
-INITIAL_SPEED = 80
+INITIAL_SPEED = 90
 STEERING_ANGLE = 0.01
 Counter_STEERING_ANGLE = 0.01
 STEERING_DURATION = 200
 Counter_STEERING_DURATION = 160
 LOW_SPEED_DURATION_SECONDS = 10
 LOW_SPEED = random.randint(20, 45)
-
-# Initial setup
-driver.setCruisingSpeed(INITIAL_SPEED)
-driver.setSteeringAngle(0.0)
 
 # Delay before starting overtake
 start_delay = random.uniform(5, 8)
@@ -29,11 +26,28 @@ counter_steering_phase = False
 alignment_complete = False
 low_speed_step_start = None
 resumed_speed = False
+start= False
+
+
+CAR_NAME="VEICULO_TREINO"
+MIN_PASS_DISTANCE_TO_TRIGGER = 30.0
+car=driver.getFromDef(CAR_NAME)
 
 while driver.step() != -1:
-    step_counter += 1
+    if start:
+        step_counter += 1
 
-    if not overtake_started and step_counter >= start_step:
+    if not start:
+        car_pos = car.getField("translation").getSFVec3f()
+        overtake_pos = driver.getSelf().getField("translation").getSFVec3f()
+        dy = overtake_pos[1] - car_pos[1]
+        if dy < MIN_PASS_DISTANCE_TO_TRIGGER:
+            # Initial setup
+            start = True
+            driver.setCruisingSpeed(INITIAL_SPEED)
+            driver.setSteeringAngle(0.0)
+
+    elif not overtake_started and start_step < step_counter:
         overtake_started = True
         turning_phase = True
         turn_start_step = step_counter

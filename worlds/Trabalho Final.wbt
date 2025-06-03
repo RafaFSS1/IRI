@@ -83,8 +83,8 @@ WorldInfo {
   ]
 }
 Viewpoint {
-  orientation -0.11673471489212343 0.13171636130969833 0.9843900682668368 1.4266301608468595
-  position -2.4118508865716226 -506.69189572564756 5.721575039545581
+  orientation -0.15545629358172883 0.1048003215388343 0.9822679030647332 1.9426176711588055
+  position 130.80590858426245 -236.2389669615415 104.74224509325917
   near 1
   follow "vehicle"
   followType "None"
@@ -172,4 +172,60 @@ DEF RANDOMIZER Robot {
     ""
   ]
   supervisor TRUE
+}
+DEF ZONE_MARKER_1 Pose {
+  translation 100 0 0
+  children [
+    DEF ZONE_BOX_1 Shape {
+      appearance PBRAppearance {
+        baseColor 1 0 0
+        transparency 0.7
+      }
+      geometry Box {
+        size 0.5 200 2
+      }
+    }
+  ]
+}
+DEF ZONE_MARKER_2 Pose {
+  translation 100 0 0
+  children [
+    DEF ZONE_BOX_2 Shape {
+      appearance PBRAppearance {
+        baseColor 1 0 0
+        transparency 0.7
+      }
+      geometry Box {
+        size 0.5 200 2
+      }
+    }
+  ]
+}
+DEF ZONE_MARKER_3 Pose {
+  translation 100 0 0
+  children [
+    DEF ZONE_BOX_3 Shape {
+      appearance PBRAppearance {
+        baseColor 1 0 0
+        transparency 0.7
+      }
+      geometry Box {
+        size 0.5 200 2
+      }
+    }
+  ]
+}
+DEF ZONE_MARKER_4 Pose {
+  translation 100 0 0
+  children [
+    DEF ZONE_BOX_4 Shape {
+      appearance PBRAppearance {
+        baseColor 1 0 0
+        transparency 0.7
+      }
+      geometry Box {
+        size 0.5 200 2
+      }
+    }
+  ]
 }
