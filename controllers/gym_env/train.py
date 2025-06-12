@@ -50,7 +50,7 @@ checkpoint_callback = CheckpointCallback(
 # --- Iniciar ou Continuar o Treino ---
 # Pode aumentar o número de passos para o próximo objetivo de treino
 # O total de passos será a soma dos passos anteriores + estes novos.
-TIMESTEPS_TO_ADD = 500000
+TIMESTEPS_TO_ADD = 50000
 
 print(f"A treinar por mais {TIMESTEPS_TO_ADD} timesteps...")
 try:

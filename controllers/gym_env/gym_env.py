@@ -281,6 +281,7 @@ class WebotsAVEnv(gym.Env):
         # 4. Combina todas as observações
         observation_list = [normalized_speed] + processed_lidar_features_list + [dist_crosswalk_norm]
         observation = np.array(observation_list, dtype=np.float32)
+        print(observation)
 
         if observation.shape != self.observation_space.shape:
              raise ValueError(f"Incompatibilidade no shape da observação. Esperado: {self.observation_space.shape}, Obtido: {observation.shape}")
@@ -378,9 +379,7 @@ class WebotsAVEnv(gym.Env):
 
     def _calculate_reward(self) -> float:
         reward = 0.0
-        reward -=0.1 #se demorar mais tempo a reward continua a diminuir mais
         debug_prints = []
-
         current_speed_kmh = self.driver.getCurrentSpeed()
         current_speed_mps = current_speed_kmh / 3.6
         av_pos_vec3 = self.av_translation_field.getSFVec3f()
@@ -402,9 +401,9 @@ class WebotsAVEnv(gym.Env):
         if front_dist < SAFE_DISTANCE_MPS * 2:  # Começa a penalizar abaixo de 6m
             # O fator (current_speed_mps + 1) torna a penalidade muito pior a alta velocidade
             proximity_penalty = (1 - (front_dist / (SAFE_DISTANCE_MPS * 2))) * (current_speed_mps + 1)
-            reward -= proximity_penalty * 5  # Ajusta o peso desta penalidade
+            reward -= proximity_penalty * 10  # Ajusta o peso desta penalidade
             debug_prints.append(
-                f"PENAL_Prox: {-proximity_penalty * 5:.2f} (d:{front_dist:.1f}m, s:{current_speed_kmh:.1f}km/h)")
+                f"PENAL_Prox: {-proximity_penalty * 10:.2f} (d:{front_dist:.1f}m, s:{current_speed_kmh:.1f}km/h)")
 
         # 2. Recompensa por Eficiência (Manter Velocidade Alvo)
         # Só dá esta recompensa se não houver perigo iminente à frente.
@@ -413,8 +412,8 @@ class WebotsAVEnv(gym.Env):
             speed_diff = abs(current_speed_mps - target_speed_mps)
             # Recompensa baseada na gaussiana: máxima na velocidade alvo, decai suavemente.
             speed_reward = math.exp(-0.1 * (speed_diff ** 2))
-            reward += speed_reward * 0.5  # Ajusta o peso desta recompensa
-            debug_prints.append(f"REW_Speed: {speed_reward * 0.5:.2f}")
+            reward += speed_reward * 0.05  # Ajusta o peso desta recompensa
+            debug_prints.append(f"REW_Speed: {speed_reward * 0.05:.2f}")
 
             if current_speed_mps < target_speed_mps * 0.5 and current_speed_kmh > 1.0:  # Abaixo de 50% da vel. alvo
                 reward -= 1.5
