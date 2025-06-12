@@ -83,11 +83,10 @@ WorldInfo {
   ]
 }
 Viewpoint {
-  orientation -0.15545629358172883 0.1048003215388343 0.9822679030647332 1.9426176711588055
-  position 130.80590858426245 -236.2389669615415 104.74224509325917
+  orientation -0.1465543933576016 -0.3336785685010783 0.9312252266292278 5.372054633721261
+  position -39.8316675412584 -435.77181464423404 22.377178415989707
   near 1
   follow "vehicle"
-  followType "None"
   lensFlare LensFlare {
   }
 }
@@ -150,13 +149,17 @@ DEF PASSADEIRA_2 PedestrianCrossing {
 DEF VEICULO_TREINO BmwX5 {
   translation 3 -499 0.296921
   rotation 0.002247101248729468 -0.0022470958753121276 0.999994950535304 1.5708050494569654
-  controller "car1"
-  sensorsSlotCenter [
+  controller "<extern>"
+  controllerArgs [
+    ""
+  ]
+  supervisor TRUE
+  sensorsSlotFront [
     Lidar {
-    }
-    Camera {
-    }
-    GPS {
+      horizontalResolution 270
+      fieldOfView 3
+      numberOfLayers 1
+      maxRange 50
     }
   ]
 }
@@ -176,56 +179,4 @@ DEF RANDOMIZER Robot {
     ""
   ]
   supervisor TRUE
-}
-DEF ZONE_MARKER_1 Pose {
-  translation 100 0 0
-  children [
-    DEF ZONE_BOX_1 Shape {
-      appearance PBRAppearance {
-        baseColor 0 1 0
-      }
-      geometry Box {
-        size 0.5 240 2
-      }
-    }
-  ]
-}
-DEF ZONE_MARKER_2 Pose {
-  translation 100 0 0
-  children [
-    DEF ZONE_BOX_2 Shape {
-      appearance PBRAppearance {
-        baseColor 1 1 0
-      }
-      geometry Box {
-        size 0.5 240 2
-      }
-    }
-  ]
-}
-DEF ZONE_MARKER_3 Pose {
-  translation 100 0 0
-  children [
-    DEF ZONE_BOX_3 Shape {
-      appearance PBRAppearance {
-        baseColor 0 0 1
-      }
-      geometry Box {
-        size 0.5 240 2
-      }
-    }
-  ]
-}
-DEF ZONE_MARKER_4 Pose {
-  translation 100 0 0
-  children [
-    DEF ZONE_BOX_4 Shape {
-      appearance PBRAppearance {
-        baseColor 1 0 0
-      }
-      geometry Box {
-        size 0.5 240 2
-      }
-    }
-  ]
 }

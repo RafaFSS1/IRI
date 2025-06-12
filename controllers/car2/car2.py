@@ -6,13 +6,13 @@ driver = Driver()
 time_step = int(driver.getBasicTimeStep())
 
 # Constants
-INITIAL_SPEED = 90
+INITIAL_SPEED = 100
 STEERING_ANGLE = 0.01
 Counter_STEERING_ANGLE = 0.01
-STEERING_DURATION = 200
-Counter_STEERING_DURATION = 160
+STEERING_DURATION = 150
+Counter_STEERING_DURATION = 100
 LOW_SPEED_DURATION_SECONDS = 10
-LOW_SPEED = random.randint(20, 45)
+LOW_SPEED = random.randint(50, 80)
 
 # Delay before starting overtake
 start_delay = random.uniform(5, 8)
@@ -47,6 +47,7 @@ while driver.step() != -1:
             # Initial setup
             start = True
             driver.setCruisingSpeed(INITIAL_SPEED)
+            print(INITIAL_SPEED)
             driver.setSteeringAngle(0.0)
 
     elif not overtake_started and start_step < step_counter:
@@ -86,7 +87,6 @@ while driver.step() != -1:
     if event_over:
         driver.getSelf().getField("translation").setSFVec3f([100.0,0.0,1.0])
         driver.setCruisingSpeed(0)  # Comanda para parar (velocidade alvo 0)
-        driver.setBrakeIntensity(1.0)  # Aplica os travões com força máxima
 
     # Ensure straight driving before overtake
     if not overtake_started:
